@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>
+		Number Baseball
+	</title>
+</head>
+
+<body>
+	<h1>
+		Number Baseball
+	</h1>
+	<hr>
+	
+	<form>
+		<input type = "button" value = "New Game" onclick = "newGame()"></button>
+	</form>
+	
+	<div id = "totalRound"></div>
+	<br>
+	
+	<form>
+		<label for = "pitch">Enter Numbers:</label>
+		<input type = "text" id = "pitch">
+		<input type = "button" value = "pitch" onclick = "pitchBall()">
+	</form>
+	
+	<hr>
+	
+	<div id = "display"></div>
+	
+	<script>
+		var arrNo = new Array();
+		var arrAns = new Array();
+		var arrInput = new Array();
+		var ans, input, round, content;
+		
+		newGame();
+		
+		function newGame(){
+			arrNo = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+			
+			round = 0;
+			content = "";
+			
+			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
+			document.getElementById("display").innerHTML = "";
+			
+			newAnswer();
+		}
+		
+		function newAnswer(){
+			let i, j, r;
+			
+			for(i = 0; i < 4; i++){
+				r = Math.floor(Math.random() * (10 - i));
+				arrAns[i] = arrNo[r];
+				
+				for(j = r; j < arrNo.length - 1; j++){
+					arrNo[j] = arrNo[j + 1];
+				}
+				
+				arrNo.length -= 1;
+			}
+			
+			return 0;
+		}
+		
+		function pitchBall(){
+			let i, j, k;
+			let strike = 0, ball = 0;
+			
+			++round;
+			input = document.getElementById("pitch").value;
+			arrInput = input.split("");
+			arrInput.length = 4;
+			
+			for(k = 0; k < 4; k++){
+				content += `${arrInput[k]}&nbsp`;
+			}
+			
+			for(i = 0; i < 4; i++){
+				for(j = 0; j < 4; j++){
+					if(arrInput[i] == arrAns[j]){
+						if(i == j)
+							++strike;
+						else
+							++ball;
+							
+						break;
+					}
+				}
+			}
+			
+			if(strike == 4)
+				content += `:<br>4 Strikes! You won the game.<br>total round = ${round}<br><br>`;
+			else if((strike == 0) && (ball == 0))
+				content += `:<br>Out!<br><br>`;
+			else
+				content += `:<br>${strike} Strike(s), ${ball} Ball(s)<br><br>`;
+			
+			document.getElementById("pitch").innerHTML = "";
+			document.getElementById("display").innerHTML = content;
+			
+			return 0;
+		}
+		
+		
+	</script>
+</body>
+
+</html>
