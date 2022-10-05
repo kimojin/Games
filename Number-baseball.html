@@ -14,13 +14,9 @@
 	<hr>
 	
 	<form>
-		<input type = "button" value = "New Game" onclick = "newGame()"></button>
-	</form>
-	
-	<div id = "totalRound"></div>
-	<br>
-	
-	<form>
+		<input type = "button" id = "newGame" value = "New Game" onclick = "newGame()">
+		<div id = "totalRound"></div>
+		<br>
 		<label for = "pitch">Enter Numbers:</label>
 		<input type = "text" id = "pitch">
 		<input type = "button" value = "pitch" onclick = "pitchBall()">
@@ -94,12 +90,13 @@
 			}
 			
 			if(strike == 4)
-				content += `:<br>4 Strikes! You won the game.<br>total round = ${round}<br><br>`;
+				content += `:<br>${arrAns.length} Strike! You won the game.<br>total round = ${round}<br><br>`;
 			else if((strike == 0) && (ball == 0))
 				content += `:<br>Out!<br><br>`;
 			else
-				content += `:<br>${strike} Strike(s), ${ball} Ball(s)<br><br>`;
+				content += `:<br>${strike} Strike, ${ball} Ball<br><br>`;
 			
+			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
 			document.getElementById("pitch").innerHTML = "";
 			document.getElementById("display").innerHTML = content;
 			
