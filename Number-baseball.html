@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang = "en">
 
 <head>
+	<meta charset = "UTF-8" />
 	<title>
 		Number Baseball
 	</title>
+	
+	<style>
+		input[type = "number"]{
+			width: 20px;
+		}
+	</style>
 </head>
 
 <body>
@@ -17,9 +24,12 @@
 		<input type = "button" id = "newGame" value = "New Game" onclick = "newGame()">
 		<div id = "totalRound"></div>
 		<br>
-		<label for = "pitch">Enter Numbers:</label>
-		<input type = "text" id = "pitch">
-		<input type = "button" value = "pitch" onclick = "pitchBall()">
+		<label for = "digit-1">Enter Numbers:</label>
+		<input type="number" id="digit-1" name="digit-1" data-next="digit-2" maxlength="1"/>
+		<input type="number" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" maxlength="1" size = "1"/>
+		<input type="number" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" maxlength="1" size = "1"/>
+		<input type="number" id="digit-4" name="digit-4" data-previous="digit-3" maxlength="1" size = "1"/>
+		<input type = "button" id = "pitchButton" value = "pitch" onclick = "pitchBall()">
 	</form>
 	
 	<hr>
@@ -30,12 +40,17 @@
 		var arrNo = new Array();
 		var arrAns = new Array();
 		var arrInput = new Array();
-		var ans, input, round, content;
+		var round, content;
+		var pitchInput = document.getElementById("pitch");
 		
 		newGame();
 		
 		function newGame(){
-			arrNo = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+			let i;
+			
+			for(i = 0; i < 10; i++){
+				arrNo[i] = i;
+			}
 			
 			round = 0;
 			content = "";
@@ -43,13 +58,16 @@
 			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
 			document.getElementById("display").innerHTML = "";
 			
+			arrAns.length = 4;
 			newAnswer();
+			
+			return;
 		}
 		
 		function newAnswer(){
 			let i, j, r;
 			
-			for(i = 0; i < 4; i++){
+			for(i = 0; i < arrAns.length; i++){
 				r = Math.floor(Math.random() * (10 - i));
 				arrAns[i] = arrNo[r];
 				
@@ -60,24 +78,35 @@
 				arrNo.length -= 1;
 			}
 			
-			return 0;
+			return;
 		}
 		
 		function pitchBall(){
-			let i, j, k;
 			let strike = 0, ball = 0;
 			
 			++round;
-			input = document.getElementById("pitch").value;
-			arrInput = input.split("");
-			arrInput.length = 4;
 			
-			for(k = 0; k < 4; k++){
-				content += `${arrInput[k]}&nbsp`;
+			for(let i = 0; i < arrAns.length; i++){
+				arrInput[i] = document.getElementById("digit-" + (i + 1)).value;
 			}
 			
-			for(i = 0; i < 4; i++){
-				for(j = 0; j < 4; j++){
+			for(let i = 0; i < arrAns.length; i++){
+				for(let j = 1; i + j < arrAns.length; j++){
+					if (arrInput[i] == arrInput[i + j]){
+						alert("The digits cannot be repeated!");
+						resetDigit();
+						
+						return;
+					}
+				}
+			}
+			
+			for(let i = 0; i < arrAns.length; i++){
+				content += arrInput[i] + "&nbsp";
+			}
+			
+			for(let i = 0; i < arrAns.length; i++){
+				for(let j = 0; j < arrAns.length; j++){
 					if(arrInput[i] == arrAns[j]){
 						if(i == j)
 							++strike;
@@ -89,7 +118,7 @@
 				}
 			}
 			
-			if(strike == 4)
+			if(strike == arrAns.length)
 				content += `:<br>${arrAns.length} Strike! You won the game.<br>total round = ${round}<br><br>`;
 			else if((strike == 0) && (ball == 0))
 				content += `:<br>Out!<br><br>`;
@@ -97,10 +126,19 @@
 				content += `:<br>${strike} Strike, ${ball} Ball<br><br>`;
 			
 			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
-			document.getElementById("pitch").innerHTML = "";
 			document.getElementById("display").innerHTML = content;
 			
-			return 0;
+			resetDigit();
+			
+			return;
+		}
+		
+		function resetDigit(){
+			for(let i = 0; i < arrAns.length; i++){
+				document.getElementById("digit-" + (i + 1)).value = "";
+			}
+			
+			return;
 		}
 		
 		
