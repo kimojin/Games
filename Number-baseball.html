@@ -43,35 +43,31 @@
 		var round, content;
 		var pitchInput = document.getElementById("pitch");
 		
+		arrAns.length = 4;
+		
 		newGame();
 		
 		function newGame(){
-			let i;
-			
-			for(i = 0; i < 10; i++){
+			for(let i = 0; i < 10; i++){
 				arrNo[i] = i;
 			}
 			
 			round = 0;
 			content = "";
-			
 			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
 			document.getElementById("display").innerHTML = "";
 			
-			arrAns.length = 4;
 			newAnswer();
 			
 			return;
 		}
 		
 		function newAnswer(){
-			let i, j, r;
-			
-			for(i = 0; i < arrAns.length; i++){
-				r = Math.floor(Math.random() * (10 - i));
+			for(let i = 0; i < arrAns.length; i++){
+				let r = Math.floor(Math.random() * (10 - i));
 				arrAns[i] = arrNo[r];
 				
-				for(j = r; j < arrNo.length - 1; j++){
+				for(let j = r; j < arrNo.length - 1; j++){
 					arrNo[j] = arrNo[j + 1];
 				}
 				
@@ -83,8 +79,6 @@
 		
 		function pitchBall(){
 			let strike = 0, ball = 0;
-			
-			++round;
 			
 			for(let i = 0; i < arrAns.length; i++){
 				arrInput[i] = document.getElementById("digit-" + (i + 1)).value;
@@ -124,6 +118,8 @@
 				content += `:<br>Out!<br><br>`;
 			else
 				content += `:<br>${strike} Strike, ${ball} Ball<br><br>`;
+			
+			++round;
 			
 			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
 			document.getElementById("display").innerHTML = content;
