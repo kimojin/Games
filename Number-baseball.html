@@ -8,8 +8,12 @@
 	</title>
 	
 	<style>
-		input[type = "number"]{
+		input[type = "text"]{
 			width: 20px;
+			height: 20px;
+			text-align: center;
+			font-family: Comic Sans MS;
+			font-size: 16px;
 		}
 	</style>
 </head>
@@ -20,15 +24,23 @@
 	</h1>
 	<hr>
 	
-	<form>
-		<input type = "button" id = "newGame" value = "New Game" onclick = "newGame()">
+	<form name = "inputs">
+		<script>
+			function autoTab(current,to){
+				if (current.getAttribute && current.value.length==current.getAttribute("maxlength")){
+					to.focus();
+				}
+			}
+		</script>
+		
+		<input type = "button" value = "New Game" onclick = "newGame()">
 		<div id = "totalRound"></div>
 		<br>
-		<label for = "digit-1">Enter Numbers:</label>
-		<input type="number" id="digit-1" name="digit-1" data-next="digit-2" maxlength="1"/>
-		<input type="number" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" maxlength="1" size = "1"/>
-		<input type="number" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" maxlength="1" size = "1"/>
-		<input type="number" id="digit-4" name="digit-4" data-previous="digit-3" maxlength="1" size = "1"/>
+		<label for = "digit-1"><b>Enter Numbers:</b></label>
+		<input type="text" id="digit-0" maxlength="1" oninput = "autoTab(this, document.getElementById('digit-1'))"/>
+		<input type="text" id="digit-1" maxlength="1" oninput = "autoTab(this, document.getElementById('digit-2'))"/>
+		<input type="text" id="digit-2" maxlength="1" oninput = "autoTab(this, document.getElementById('digit-3'))"/>
+		<input type="text" id="digit-3" maxlength="1"/>
 		<input type = "button" id = "pitchButton" value = "pitch" onclick = "pitchBall()">
 	</form>
 	
@@ -41,13 +53,26 @@
 		var arrAns = new Array();
 		var arrInput = new Array();
 		var round, content;
-		var pitchInput = document.getElementById("pitch");
 		
 		arrAns.length = 4;
 		
 		newGame();
 		
+		document.getElementById("digit-3").addEventListener("keypress", function(e){
+			if(e.keyCode == 13){
+				pitchBall();
+			}
+		});
+		
 		function newGame(){
+			resetData();
+			resetInput();
+			document.getElementById('digit-0').focus();
+			
+			return;
+		}
+		
+		function resetData(){
 			for(let i = 0; i < 10; i++){
 				arrNo[i] = i;
 			}
@@ -57,12 +82,6 @@
 			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
 			document.getElementById("display").innerHTML = "";
 			
-			newAnswer();
-			
-			return;
-		}
-		
-		function newAnswer(){
 			for(let i = 0; i < arrAns.length; i++){
 				let r = Math.floor(Math.random() * (10 - i));
 				arrAns[i] = arrNo[r];
@@ -77,26 +96,29 @@
 			return;
 		}
 		
+		function resetInput(){
+			for(let i = 0; i < arrAns.length; i++){
+				document.getElementById("digit-" + i).value = "";
+			}
+			
+			return;
+		}
+		
 		function pitchBall(){
-			let strike = 0, ball = 0;
+			let strike = 0, ball = 0;  
+			++round;
 			
 			for(let i = 0; i < arrAns.length; i++){
-				arrInput[i] = document.getElementById("digit-" + (i + 1)).value;
+				arrInput[i] = document.getElementById("digit-" + i).value;
+			}
+			
+			if(validateInput()){
+				resetInput();
+				return;
 			}
 			
 			for(let i = 0; i < arrAns.length; i++){
-				for(let j = 1; i + j < arrAns.length; j++){
-					if (arrInput[i] == arrInput[i + j]){
-						alert("The digits cannot be repeated!");
-						resetDigit();
-						
-						return;
-					}
-				}
-			}
-			
-			for(let i = 0; i < arrAns.length; i++){
-				content += arrInput[i] + "&nbsp";
+				arrInput[i] = Number(arrInput[i]);
 			}
 			
 			for(let i = 0; i < arrAns.length; i++){
@@ -112,6 +134,44 @@
 				}
 			}
 			
+			displayResult(strike, ball);
+			resetInput();
+			document.getElementById('digit-0').focus();
+			
+			return;
+		}
+		
+		function validateInput(){
+			for(let i = 0; i < arrAns.length; i++){
+				if(arrInput[i] === ""){
+					alert("You must Enter 4 numbers!");
+					
+					return 1;
+				}
+				
+				if(isNaN(Number(arrInput[i]))){
+					alert("You must Enter a number!");
+					
+					return 1;
+				}
+				
+				for(let j = 1; i + j < arrAns.length; j++){
+					if (arrInput[i] == arrInput[i + j]){
+						alert("The digits cannot be repeated!");
+						
+						return 1;
+					}
+				}
+			}
+			
+			return;
+		}
+		
+		function displayResult(strike, ball){
+			for(let i = 0; i < arrAns.length; i++){
+				content += arrInput[i] + "&nbsp";
+			}
+			
 			if(strike == arrAns.length)
 				content += `:<br>${arrAns.length} Strike! You won the game.<br>total round = ${round}<br><br>`;
 			else if((strike == 0) && (ball == 0))
@@ -119,24 +179,13 @@
 			else
 				content += `:<br>${strike} Strike, ${ball} Ball<br><br>`;
 			
-			++round;
+			
 			
 			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
 			document.getElementById("display").innerHTML = content;
 			
-			resetDigit();
-			
 			return;
 		}
-		
-		function resetDigit(){
-			for(let i = 0; i < arrAns.length; i++){
-				document.getElementById("digit-" + (i + 1)).value = "";
-			}
-			
-			return;
-		}
-		
 		
 	</script>
 </body>
