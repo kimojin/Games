@@ -2,51 +2,106 @@
 <html lang = "en">
 
 <head>
-	<meta charset = "UTF-8" />
+	<meta charset = "UTF-8">
+	
 	<title>
 		Number Baseball
 	</title>
 	
 	<style>
-		input[type = "text"]{
-			width: 20px;
-			height: 20px;
-			text-align: center;
+		html, body{
 			font-family: Comic Sans MS;
-			font-size: 16px;
+			height: 99%;
+		}
+		
+		input[type = "text"]{
+			width: 100px;
+			height: 120px;
+			font-family: Comic Sans MS;
+			font-size: 80px;
+			text-align: center;
+		}
+		
+		.center{
+			text-align: center;
+		}
+		
+		.outerDiv{
+			height: 100%;
+		}
+		
+		.leftDiv{
+			width: 50%;
+			height: 100%;
+			float: left;
+		}
+		
+		.rightDiv{
+			width: 50%;
+			height: 100%;
+			float: right;
+		}
+		
+		.title{
+			margin-top: 30%;
+			width: 400px;
+			height: 100px;
+			border: none;
+			background-color: white;
+			font-family: Comic Sans MS;
+			font-size: 50px;
+			text-align: center;
+			cursor: pointer;
+		}
+		
+		.pitch{
+			width: 90px;
+			height: 40px;
+			border: 1px solid black;
+			background-color: white;
+			font-family: Comic Sans MS;
+			font-size: 20px;
+			color: black;
+			text-align: center;
+			cursor: pointer;
+		}
+		
+		.history{
+			font-size: 50px;
+			text-align: center;
+		}
+		
+		.totalRound{
+			margin-right: 2%;
+			font-size: 25px;
+			text-align: right;
+		}
+		
+		.result{
+			font-size: 24px;
 		}
 	</style>
 </head>
 
 <body>
-	<h1>
-		Number Baseball
-	</h1>
-	<hr>
+	<div class = "outerDiv">
+		<div class = "leftDiv">
+			<form class = "center">
+				<input type = "button" class = "title" value = "Number Baseball" onclick = "newGame()"><br><br>
+				<input type = "text" name = "digit" id = "digit0" maxlength = "1" placeholder = "0" oninput = "autoTab(this, document.getElementById('digit1'))">
+				<input type = "text" name = "digit" id = "digit1" maxlength = "1" placeholder = "0" oninput = "autoTab(this, document.getElementById('digit2'))">
+				<input type = "text" name = "digit" id = "digit2" maxlength = "1" placeholder = "0" oninput = "autoTab(this, document.getElementById('digit3'))">
+				<input type = "text" name = "digit" id = "digit3" maxlength = "1"placeholder = "0"><br><br>
+				<input type = "button" class = "pitch" value = "pitch" onclick = "pitchBall()">
+			</form>
+		</div>
 	
-	<form name = "inputs">
-		<script>
-			function autoTab(current,to){
-				if (current.getAttribute && current.value.length==current.getAttribute("maxlength")){
-					to.focus();
-				}
-			}
-		</script>
-		
-		<input type = "button" value = "New Game" onclick = "newGame()">
-		<div id = "totalRound"></div>
-		<br>
-		<label for = "digit-1"><b>Enter Numbers:</b></label>
-		<input type="text" id="digit-0" maxlength="1" oninput = "autoTab(this, document.getElementById('digit-1'))"/>
-		<input type="text" id="digit-1" maxlength="1" oninput = "autoTab(this, document.getElementById('digit-2'))"/>
-		<input type="text" id="digit-2" maxlength="1" oninput = "autoTab(this, document.getElementById('digit-3'))"/>
-		<input type="text" id="digit-3" maxlength="1"/>
-		<input type = "button" id = "pitchButton" value = "pitch" onclick = "pitchBall()">
-	</form>
-	
-	<hr>
-	
-	<div id = "display"></div>
+		<div class = "rightDiv">
+			<div class = "history"><b>HISTORY</b></div><br>
+			<div class = "totalRound" id = "totalRound"></div><br><br><br>
+			<div class = "result" id = "result"></div>
+		</div>
+	</div>
 	
 	<script>
 		var arrNo = new Array();
@@ -58,7 +113,7 @@
 		
 		newGame();
 		
-		document.getElementById("digit-3").addEventListener("keypress", function(e){
+		document.getElementById("digit3").addEventListener("keypress", function(e){
 			if(e.keyCode == 13){
 				pitchBall();
 			}
@@ -67,7 +122,7 @@
 		function newGame(){
 			resetData();
 			resetInput();
-			document.getElementById('digit-0').focus();
+			document.getElementById('digit0').focus();
 			
 			return;
 		}
@@ -79,8 +134,8 @@
 			
 			round = 0;
 			content = "";
-			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
-			document.getElementById("display").innerHTML = "";
+			document.getElementById("totalRound").innerHTML = `<b>total round: ${round}<b>`;
+			document.getElementById("result").innerHTML = "";
 			
 			for(let i = 0; i < arrAns.length; i++){
 				let r = Math.floor(Math.random() * (10 - i));
@@ -98,7 +153,7 @@
 		
 		function resetInput(){
 			for(let i = 0; i < arrAns.length; i++){
-				document.getElementById("digit-" + i).value = "";
+				document.getElementById("digit" + i).value = "";
 			}
 			
 			return;
@@ -106,14 +161,14 @@
 		
 		function pitchBall(){
 			let strike = 0, ball = 0;  
-			++round;
 			
 			for(let i = 0; i < arrAns.length; i++){
-				arrInput[i] = document.getElementById("digit-" + i).value;
+				arrInput[i] = document.getElementById("digit" + i).value;
 			}
 			
 			if(validateInput()){
 				resetInput();
+				document.getElementById("digit0").focus();
 				return;
 			}
 			
@@ -134,9 +189,10 @@
 				}
 			}
 			
+			++round;
 			displayResult(strike, ball);
 			resetInput();
-			document.getElementById('digit-0').focus();
+			document.getElementById('digit0').focus();
 			
 			return;
 		}
@@ -173,18 +229,20 @@
 			}
 			
 			if(strike == arrAns.length)
-				content += `:<br>${arrAns.length} Strike! You won the game.<br>total round = ${round}<br><br>`;
-			else if((strike == 0) && (ball == 0))
-				content += `:<br>Out!<br><br>`;
+				content += `:<br>Out! You won the game.<br>total round = ${round}<br><br>`;
 			else
-				content += `:<br>${strike} Strike, ${ball} Ball<br><br>`;
+				content += `:<br>${strike} Strike ${ball} Ball<br><br>`;
 			
-			
-			
-			document.getElementById("totalRound").innerHTML = `total round: ${round}`;
-			document.getElementById("display").innerHTML = content;
+			document.getElementById("totalRound").innerHTML = `<b>total round: ${round}<b>`;
+			document.getElementById("result").innerHTML = content;
 			
 			return;
+		}
+		
+		function autoTab(current,to){
+			if (current.value.length == current.getAttribute("maxlength")){
+				to.focus();
+			}
 		}
 		
 	</script>
