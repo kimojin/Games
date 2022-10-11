@@ -71,9 +71,14 @@
 			text-align: center;
 		}
 		
-		.totalRound{
+		.round{
 			margin-right: 2%;
-			font-size: 25px;
+			font-size: 20px;
+			text-align: right;
+		}
+		.totalPitch{
+			margin-right: 2%;
+			font-size: 20px;
 			text-align: right;
 		}
 		
@@ -98,7 +103,8 @@
 	
 		<div class = "rightDiv">
 			<div class = "history"><b>HISTORY</b></div><br>
-			<div class = "totalRound" id = "totalRound"></div><br><br><br>
+			<div class = "round" id = "round"></div>
+			<div class = "totalPitch" id = "totalPitch"></div><br><br><br>
 			<div class = "result" id = "result"></div>
 		</div>
 	</div>
@@ -107,7 +113,7 @@
 		var arrNo = new Array();
 		var arrAns = new Array();
 		var arrInput = new Array();
-		var round, content;
+		var pitch, round = 0, stat, content;
 		
 		arrAns.length = 4;
 		
@@ -123,7 +129,9 @@
 			resetData();
 			resetInput();
 			document.getElementById('digit0').focus();
+			round++;
 			
+			document.getElementById("round").innerHTML = `<b>Round<b>: ${round}`;
 			return;
 		}
 		
@@ -132,9 +140,9 @@
 				arrNo[i] = i;
 			}
 			
-			round = 0;
+			pitch = 0;
 			content = "";
-			document.getElementById("totalRound").innerHTML = `<b>total round: ${round}<b>`;
+			document.getElementById("totalPitch").innerHTML = `<b>total pitch: ${pitch}<b>`;
 			document.getElementById("result").innerHTML = "";
 			
 			for(let i = 0; i < arrAns.length; i++){
@@ -189,7 +197,7 @@
 				}
 			}
 			
-			++round;
+			++pitch;
 			displayResult(strike, ball);
 			resetInput();
 			document.getElementById('digit0').focus();
@@ -229,11 +237,11 @@
 			}
 			
 			if(strike == arrAns.length)
-				content += `:<br>Out! You won the game.<br>total round = ${round}<br><br>`;
+				content += `:<br>Out! You won the game.<br>total pitch = ${pitch}<br><br>`;
 			else
 				content += `:<br>${strike} Strike ${ball} Ball<br><br>`;
 			
-			document.getElementById("totalRound").innerHTML = `<b>total round: ${round}<b>`;
+			document.getElementById("totalPitch").innerHTML = `<b>total pitch: ${pitch}<b>`;
 			document.getElementById("result").innerHTML = content;
 			
 			return;
