@@ -93,10 +93,10 @@
 		<div class = "leftDiv">
 			<form class = "center">
 				<input type = "button" class = "title" value = "Number Baseball" onclick = "newGame()"><br><br>
-				<input type = "text" name = "digit" id = "digit0" maxlength = "1" placeholder = "0" oninput = "autoTab(this, document.getElementById('digit1'))">
-				<input type = "text" name = "digit" id = "digit1" maxlength = "1" placeholder = "0" oninput = "autoTab(this, document.getElementById('digit2'))">
-				<input type = "text" name = "digit" id = "digit2" maxlength = "1" placeholder = "0" oninput = "autoTab(this, document.getElementById('digit3'))">
-				<input type = "text" name = "digit" id = "digit3" maxlength = "1"placeholder = "0"><br><br>
+				<input type = "text" name = "digit" id = "digit0" maxlength = "1" placeholder = "0" onfocus = "this.select()" oninput = "autoTab(this, document.getElementById('digit1'))">
+				<input type = "text" name = "digit" id = "digit1" maxlength = "1" placeholder = "0" onfocus = "this.select()" oninput = "autoTab(this, document.getElementById('digit2'))">
+				<input type = "text" name = "digit" id = "digit2" maxlength = "1" placeholder = "0" onfocus = "this.select()" oninput = "autoTab(this, document.getElementById('digit3'))">
+				<input type = "text" name = "digit" id = "digit3" maxlength = "1" placeholder = "0" onfocus = "this.select()"><br><br>
 				<input type = "button" class = "pitch" value = "pitch" onclick = "pitchBall()">
 			</form>
 		</div>
@@ -249,7 +249,7 @@
 		
 		function autoTab(current,to){
 			if (current.value.length == current.getAttribute("maxlength")){
-				to.focus();
+				to.select();
 			}
 		}
 		
