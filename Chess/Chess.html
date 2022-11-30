@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<meta charset = "UTF-8">
+	<title>Chess</title>
+	<link href = "style.css" rel = "stylesheet">
+</head>
+
+<body>
+	<h1 class = "title">Chess</h1>
+	<div class = "board" id = "chessBoard"></div>
+	<div id = "test"></div>
+	
+	<script>
+		var board = ``;
+		var piece = new Object;
+		var file = ["a", "b", "c", "d", "e", "f", "g", "h"];
+		var initialPos = [3, 5, 4, 2, 1, 4, 5, 3];
+		
+		piece[1] = {
+			id: 1,
+			name: "whiteK",
+			code: "&#9812",
+			side: "white",
+			role: "king"
+		}
+		
+		piece[2] = {
+			id: 2,
+			name: "whiteQ",
+			code: "&#9813",
+			side: "white",
+			role: "queen"
+		}
+		
+		piece[3] = {
+			id: 3,
+			name: "whiteR",
+			code: "&#9814",
+			side: "white",
+			role: "rook"
+		}
+		
+		piece[4] = {
+			id: 4,
+			name: "whiteB",
+			code: "&#9815",
+			side: "white",
+			role: "bishop"
+		}
+		
+		piece[5] = {
+			id: 5,
+			name: "whiteN",
+			code: "&#9816",
+			side: "white",
+			role: "knight"
+		}
+		
+		piece[6] = {
+			id: 6,
+			name: "whiteP",
+			code: "&#9817",
+			side: "white",
+			role: "pawn"
+		}
+		
+		piece[7] = {
+			id: 7,
+			name: "blackK",
+			code: "&#9818",
+			side: "black",
+			role: "king"
+		}
+		
+		piece[8] = {
+			id: 8,
+			name: "blackQ",
+			code: "&#9819",
+			side: "black",
+			role: "queen"
+		}
+		
+		piece[9] = {
+			id: 9,
+			name: "blackR",
+			code: "&#9820",
+			side: "black",
+			role: "rook"
+		}
+		
+		piece[10] = {
+			id: 10,
+			name: "blackB",
+			code: "&#9821",
+			side: "black",
+			role: "bishop"
+		}
+		
+		piece[11] = {
+			id: 11,
+			name: "blackN",
+			code: "&#9822",
+			side: "black",
+			role: "knight"
+		}
+		
+		piece[12] = {
+			id: 12,
+			name: "blackP",
+			code: "&#9823",
+			side: "black",
+			role: "pawn"
+		}
+		
+		for(let i = 0; i < 8; i++){
+			board += `<div class = "rank">`;
+			
+			for(let j = 0; j < 8; j++){
+				if((i + j) % 2){
+					board += `<div class = "dark square" id = "${file[j]}${8 - i}"></div>`;
+				} else{
+					board += `<div class = "light square" id = "${file[j]}${8 - i}"></div>`;
+				}
+			}
+			
+			board += `</div>`;
+		}
+		
+		document.getElementById("chessBoard").innerHTML = board;
+		
+		for(let i = 0; i < 8; i++){
+			document.getElementById(`${file[i]}1`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[initialPos[i]].name}.png" alt = "${piece[initialPos[i]].code}" class = "image"></button>`;
+			document.getElementById(`${file[i]}2`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[6].name}.png" alt = "${piece[6].code}" class = "image"></button>`;
+			document.getElementById(`${file[i]}8`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[initialPos[i] + 6].name}.png" alt = "${piece[initialPos[i] + 6].code}" class = "image"></button>`;
+			document.getElementById(`${file[i]}7`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[12].name}.png" alt = "${piece[12].code}" class = "image"></button>`;
+		}
+		
+    </script>
+    
+</body>
+</html>
