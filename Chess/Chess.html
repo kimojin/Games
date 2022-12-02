@@ -9,134 +9,154 @@
 <body>
 	<h1 class = "title">Chess</h1>
 	<div class = "board" id = "chessBoard"></div>
-	<div id = "test"></div>
+	<div id = "test0"></div>
+	<div id = "test1"></div>
+	<div id = "test2"></div>
+	<div id = "test3"></div>
 	
 	<script>
-		var board = ``;
-		var piece = new Object;
 		var file = ["a", "b", "c", "d", "e", "f", "g", "h"];
-		var initialPos = [3, 5, 4, 2, 1, 4, 5, 3];
 		
-		piece[1] = {
-			id: 1,
-			name: "whiteK",
-			code: "&#9812",
-			side: "white",
-			role: "king"
-		}
+		var square = new Array();
+		var piece = new Object;
 		
-		piece[2] = {
-			id: 2,
-			name: "whiteQ",
-			code: "&#9813",
-			side: "white",
-			role: "queen"
-		}
+		squareObject();
+		pieceObject();
+		setBoard();
+		setPiece();
 		
-		piece[3] = {
-			id: 3,
-			name: "whiteR",
-			code: "&#9814",
-			side: "white",
-			role: "rook"
-		}
+		document.getElementById("test0").innerHTML = piece[31].posCo;
+		document.getElementById("test1").innerHTML = piece[31].name;
+		document.getElementById("test2").innerHTML = piece[31].code;
+		document.getElementById("test3").innerHTML = square[4][6].name;
 		
-		piece[4] = {
-			id: 4,
-			name: "whiteB",
-			code: "&#9815",
-			side: "white",
-			role: "bishop"
-		}
-		
-		piece[5] = {
-			id: 5,
-			name: "whiteN",
-			code: "&#9816",
-			side: "white",
-			role: "knight"
-		}
-		
-		piece[6] = {
-			id: 6,
-			name: "whiteP",
-			code: "&#9817",
-			side: "white",
-			role: "pawn"
-		}
-		
-		piece[7] = {
-			id: 7,
-			name: "blackK",
-			code: "&#9818",
-			side: "black",
-			role: "king"
-		}
-		
-		piece[8] = {
-			id: 8,
-			name: "blackQ",
-			code: "&#9819",
-			side: "black",
-			role: "queen"
-		}
-		
-		piece[9] = {
-			id: 9,
-			name: "blackR",
-			code: "&#9820",
-			side: "black",
-			role: "rook"
-		}
-		
-		piece[10] = {
-			id: 10,
-			name: "blackB",
-			code: "&#9821",
-			side: "black",
-			role: "bishop"
-		}
-		
-		piece[11] = {
-			id: 11,
-			name: "blackN",
-			code: "&#9822",
-			side: "black",
-			role: "knight"
-		}
-		
-		piece[12] = {
-			id: 12,
-			name: "blackP",
-			code: "&#9823",
-			side: "black",
-			role: "pawn"
-		}
-		
-		for(let i = 0; i < 8; i++){
-			board += `<div class = "rank">`;
+		function squareObject(){
+			for(let i = 0; i < 8; i++){
+				square[i] = new Object;
 			
-			for(let j = 0; j < 8; j++){
-				if((i + j) % 2){
-					board += `<div class = "dark square" id = "${file[j]}${8 - i}"></div>`;
-				} else{
-					board += `<div class = "light square" id = "${file[j]}${8 - i}"></div>`;
+				for(let j = 0; j < 8; j++){
+					square[i][j] = {
+						name: `${file[i]}${j + 1}`,
+					}
+					
+					if((i + j) % 2)
+						square[i][j].color = "light";
+					else
+						square[i][j].color = "dark";
 				}
 			}
+		}
+		
+		function pieceObject(){
+			let pieceRole = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"];
+			let pieceRoleInt = ["R", "N", "B", "Q", "K", "B", "N", "R"];
+			let pieceCode = [9814, 9816, 9815, 9813, 9812, 9815, 9816, 9814];
 			
-			board += `</div>`;
+			for(let i = 0; i < 8; i++){
+				if((i == 3) || (i == 4)){
+					piece[i] = {
+						name: "white" + pieceRoleInt[i],
+						code: `&#${pieceCode[i]}`,
+						role: pieceRole[i],
+						pos: 10 * (i + 1) + 1,
+						posCo: `${file[i]}1`,
+						color: "white",
+						background: "black",
+						onclick: 0,
+					}
+				
+					piece[i + 16] = {
+						name: "black" + pieceRoleInt[i],
+						code: `&#${pieceCode[i] + 6}`,
+						role: pieceRole[i],
+						pos: 10 * (i + 1) + 8,
+						posCo: `${file[i]}8`,
+						color: "black",
+						background: "white",
+						onclick: 0,
+					}
+				} else {
+					piece[i] = {
+						name: "white" + pieceRoleInt[i] + `${Math.floor(i / 4)}`,
+						code: `&#${pieceCode[i]}`,
+						role: pieceRole[i],
+						pos: 10 * (i + 1) + 1,
+						posCo: `${file[i]}1`,
+						color: "white",
+						background: "black",
+						onclick: 0,
+					}
+				
+					piece[i + 16] = {
+						name: "black" + pieceRoleInt[i] + `${Math.floor(i / 4)}`,
+						code: `&#${pieceCode[i] + 6}`,
+						role: pieceRole[i],
+						pos: 10 * (i + 1) + 8,
+						posCo: `${file[i]}8`,
+						color: "black",
+						background: "white",
+						onclick: 0,
+					}
+				}
+				
+				piece[i + 8] = {
+					name: "whiteP" + `${i}`,
+					code: "&#9817",
+					role: "pawn",
+					pos: 10 * (i + 1) + 2,
+					posCoCo: `${file[i]}2`,
+					color: "white",
+					background: "black",
+					onclick: 0,
+				}
+				
+				piece[i + 24] = {
+					name: "blackP" + `${i}`,
+					code: "&#9823",
+					role: "pawn",
+					pos: 10 * (i + 1) + 7,
+					posCo: `${file[i]}7`,
+					color: "black",
+					background: "white",
+					onclick: 0,
+				}
+			}
 		}
 		
-		document.getElementById("chessBoard").innerHTML = board;
-		
-		for(let i = 0; i < 8; i++){
-			document.getElementById(`${file[i]}1`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[initialPos[i]].name}.png" alt = "${piece[initialPos[i]].code}" class = "image"></button>`;
-			document.getElementById(`${file[i]}2`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[6].name}.png" alt = "${piece[6].code}" class = "image"></button>`;
-			document.getElementById(`${file[i]}8`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[initialPos[i] + 6].name}.png" alt = "${piece[initialPos[i] + 6].code}" class = "image"></button>`;
-			document.getElementById(`${file[i]}7`).innerHTML = `<button type = "button" class = "piece"><img src = "${piece[12].name}.png" alt = "${piece[12].code}" class = "image"></button>`;
+		function setBoard(){
+			var board = "";
+			
+			for(let i = 0; i < 8; i++){
+				board += '<div class = "rank">';
+				
+				for(let j = 0; j < 8; j++){
+					board += `<div class = "${square[j][7 - i].color} square" id = "${square[j][7 - i].name}">`;
+					board += "</div>";
+				}
+				
+				board += "</div>";
+			}
+			
+			document.getElementById("chessBoard").innerHTML = board;
 		}
 		
-    </script>
-    
+		function setPiece(){
+			for(let i = 0; i < 32; i++){
+				document.getElementById(`${piece[i].posCo}`).innerHTML = `<button type = "button" class = "pieceCont" id = "${i}" onclick = "clickPiece(this.id)">${piece[i].code}`;
+				document.getElementById(`${piece[i].posCo}`).innerHTML += "</div>";
+			}
+		}
+		
+		function clickPiece(p){
+			if(piece[p].onclick){
+				document.getElementById(`${p}`).classList.remove("onclick");
+				piece[p].onclick = 0;
+			} else{
+				document.getElementById(`${p}`).classList.add("onclick");
+				piece[p].onclick = 1;
+			}
+		}
+	</script>
+	
 </body>
 </html>
