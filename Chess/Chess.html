@@ -8,16 +8,19 @@
 
 <body>
 	<h1 class = "title">Chess</h1>
-	<div class = "board" id = "chessBoard"></div>
+	<div class = "game">
+		<div class = "rank" id = "coordRank"></div>
+		<div class = "board" id = "board"></div>
+		<div class = "file" id = "coordFile"></div>
+	<div>
+	
 	<div id = "test0"></div>
 	<div id = "test1"></div>
 	<div id = "test2"></div>
 	<div id = "test3"></div>
 	
 	<script>
-		var file = ["a", "b", "c", "d", "e", "f", "g", "h"];
-		
-		var square = new Array();
+		var square = new Object;
 		var piece = new Object;
 		
 		squareObject();
@@ -25,137 +28,241 @@
 		setBoard();
 		setPiece();
 		
-		document.getElementById("test0").innerHTML = piece[31].posCo;
-		document.getElementById("test1").innerHTML = piece[31].name;
-		document.getElementById("test2").innerHTML = piece[31].code;
-		document.getElementById("test3").innerHTML = square[4][6].name;
+		pieceRng();
 		
 		function squareObject(){
-			for(let i = 0; i < 8; i++){
-				square[i] = new Object;
-			
-				for(let j = 0; j < 8; j++){
-					square[i][j] = {
-						name: `${file[i]}${j + 1}`,
+			for(let i = 0; i < 9; i++){
+				for(let j = 0; j < 9; j++){
+					square[10 * i + j] = {
+						name: 10 * i + j,
+						occupied: 0,
 					}
 					
-					if((i + j) % 2)
-						square[i][j].color = "light";
-					else
-						square[i][j].color = "dark";
+					if((i * j) && ((i + j) % 2)){
+						square[10 * i + j].bgColor = "light";
+					} else if((i * j) && ((i + j + 1) % 2)){
+						square[10 * i + j].bgColor = "dark";
+					}
 				}
 			}
+			
+			return 0;
 		}
 		
 		function pieceObject(){
-			let pieceRole = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"];
-			let pieceRoleInt = ["R", "N", "B", "Q", "K", "B", "N", "R"];
-			let pieceCode = [9814, 9816, 9815, 9813, 9812, 9815, 9816, 9814];
+			let role = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"];
+			let init = ["R", "N", "B", "Q", "K", "B", "N", "R"];
+			let code = [9814, 9816, 9815, 9813, 9812, 9815, 9816, 9814];
 			
 			for(let i = 0; i < 8; i++){
-				if((i == 3) || (i == 4)){
-					piece[i] = {
-						name: "white" + pieceRoleInt[i],
-						code: `&#${pieceCode[i]}`,
-						role: pieceRole[i],
-						pos: 10 * (i + 1) + 1,
-						posCo: `${file[i]}1`,
-						color: "white",
-						background: "black",
-						onclick: 0,
-					}
+				piece[i] = {
+					name: `W${init[i]}${Math.floor(i / 5)}`,
+					code: `&#${code[i]}`,
+					color: "white",
+					role: `${role[i]}`,
+					pos: 10 * (i + 1) + 1,
+					atkRng: [],
+					click: 0,
+					threat: 0,
+				}
 				
-					piece[i + 16] = {
-						name: "black" + pieceRoleInt[i],
-						code: `&#${pieceCode[i] + 6}`,
-						role: pieceRole[i],
-						pos: 10 * (i + 1) + 8,
-						posCo: `${file[i]}8`,
-						color: "black",
-						background: "white",
-						onclick: 0,
-					}
-				} else {
-					piece[i] = {
-						name: "white" + pieceRoleInt[i] + `${Math.floor(i / 4)}`,
-						code: `&#${pieceCode[i]}`,
-						role: pieceRole[i],
-						pos: 10 * (i + 1) + 1,
-						posCo: `${file[i]}1`,
-						color: "white",
-						background: "black",
-						onclick: 0,
-					}
-				
-					piece[i + 16] = {
-						name: "black" + pieceRoleInt[i] + `${Math.floor(i / 4)}`,
-						code: `&#${pieceCode[i] + 6}`,
-						role: pieceRole[i],
-						pos: 10 * (i + 1) + 8,
-						posCo: `${file[i]}8`,
-						color: "black",
-						background: "white",
-						onclick: 0,
-					}
+				piece[i + 16] = {
+					name: `B${init[i]}${Math.floor(i / 5)}`,
+					code: `&#${code[i] + 6}`,
+					color: "black",
+					role: `${role[i]}`,
+					pos: 10 * (i + 1) + 8,
+					atkRng: [],
+					click: 0,
+					threat: 0,
 				}
 				
 				piece[i + 8] = {
-					name: "whiteP" + `${i}`,
+					name: `WP${i}`,
 					code: "&#9817",
-					role: "pawn",
-					pos: 10 * (i + 1) + 2,
-					posCoCo: `${file[i]}2`,
 					color: "white",
-					background: "black",
-					onclick: 0,
+					role: "pawnW",
+					pos: 10 * (i + 1) + 2,
+					atkRng: [],
+					click: 0,
+					threat: 0,
 				}
 				
 				piece[i + 24] = {
-					name: "blackP" + `${i}`,
+					name: `BP${i}`,
 					code: "&#9823",
-					role: "pawn",
-					pos: 10 * (i + 1) + 7,
-					posCo: `${file[i]}7`,
 					color: "black",
-					background: "white",
-					onclick: 0,
+					role: "pawnB",
+					pos: 10 * (i + 1) + 7,
+					atkRng: [],
+					click: 0,
+					threat: 0,
 				}
 			}
+			
+			return 0;
 		}
 		
 		function setBoard(){
-			var board = "";
+			let board = "";
+			let coordRank = "";
+			let coordFile = "";
+			let rank = ["a&nbsp", "b&nbsp", "c&nbsp", "d&nbsp", "e&nbsp", "f&nbsp", "g&nbsp", "h&nbsp"];
+			let file = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 			
-			for(let i = 0; i < 8; i++){
-				board += '<div class = "rank">';
-				
-				for(let j = 0; j < 8; j++){
-					board += `<div class = "${square[j][7 - i].color} square" id = "${square[j][7 - i].name}">`;
-					board += "</div>";
+			for(let i = 1; i < 9; i++){
+				for(let j = 1; j < 9; j++){
+					board += `<div class = "${square[j * 10 - i + 9].bgColor} square" id = "${j}${9 - i}">` + "</div>";
 				}
 				
-				board += "</div>";
+				coordRank += `<div class = "square">${rank[8 - i]}` + "</div>";
+				coordFile += `<div class = "square">${file[i]}` + "</div>";
 			}
 			
-			document.getElementById("chessBoard").innerHTML = board;
+			document.getElementById("board").innerHTML = board;
+			document.getElementById("coordRank").innerHTML = coordRank;
+			document.getElementById("coordFile").innerHTML = coordFile;
+			
+			return 0;
 		}
 		
 		function setPiece(){
 			for(let i = 0; i < 32; i++){
-				document.getElementById(`${piece[i].posCo}`).innerHTML = `<button type = "button" class = "pieceCont" id = "${i}" onclick = "clickPiece(this.id)">${piece[i].code}`;
-				document.getElementById(`${piece[i].posCo}`).innerHTML += "</div>";
+				document.getElementById(`${piece[i].pos}`).innerHTML = `<div class = "pieceCont" name = "${i}" onmouseenter = "pieceEnter(this)" onmouseleave = "pieceLeave(this)" onclick = "pieceClick(this)">${piece[i].code}` + "</div>";
+				
+				square[piece[i].pos].occupied = 1;
+				square[piece[i].pos].occupiedBy = i;
 			}
+			
+			return 0;
 		}
 		
-		function clickPiece(p){
-			if(piece[p].onclick){
-				document.getElementById(`${p}`).classList.remove("onclick");
-				piece[p].onclick = 0;
-			} else{
-				document.getElementById(`${p}`).classList.add("onclick");
-				piece[p].onclick = 1;
-			}
+		function pieceEnter(p){
+			p.classList.add("mousePiece");
+			
+			document.getElementById("test0").innerHTML = piece[p.attributes["name"].value].pos;
+			document.getElementById("test1").innerHTML = piece[p.attributes["name"].value].name;
+			
+			return 0;
 		}
+		
+		function pieceLeave(p){
+			p.classList.remove("mousePiece");
+			
+			return 0;
+		}
+		
+		function pieceClick(p){
+			let n = p.attributes["name"].value;
+			
+			if(piece[n].click){
+				p.classList.remove("click");
+				
+				for(let i = 0; i < piece[n].atkRng.length; i++){
+					document.getElementById(`${piece[n].atkRng[i]}`).innerHTML = "";
+				}
+			} else{
+				p.classList.add("click");
+				
+				for(let i = 0; i < piece[n].atkRng.length; i++){
+					document.getElementById(`${piece[n].atkRng[i]}`).innerHTML = `<div class = "guide" onmouseenter = "guideEnter(this)" onmouseleave = "guideLeave(this)" onclick = "movePiece(${n}, ${piece[n].atkRng[i]}); setBoard(); setPiece();">` + "</div>";
+					
+					console.log(`piece pos: ${piece[n].pos}, piece range: ${piece[n].atkRng[i]}`);
+				}
+			}
+			
+			piece[n].click = !(piece[n].click);
+			setPiece();
+			
+			console.log(`name: ${piece[n].name}, color: ${piece[n].color}, role: ${piece[n].role}, pos: ${piece[n].pos}, atkRng: ${piece[n].atkRng}, click: ${piece[n].click}`);
+			return 0;
+		}
+		
+		function guideEnter(g){
+			g.classList.add("mouseGuide");
+			
+			return 0;
+		}
+		
+		function guideLeave(g){
+			g.classList.remove("mouseGuide");
+			
+			return 0;
+		}
+		
+		function pieceRng(){
+			for(let n = 0; n < 32; n++){
+				var r = piece[n].role;
+				let j;
+				
+				piece[n].atkRng = [];
+				
+				if(!(file(n) || rank(n))){
+					console.log(piece[n].pos);
+					console.log("Break has occured.");
+					break;
+				}
+				
+				switch(r){
+					case "pawnW":
+						if(rank(n) == 2){
+							j = 2;
+						} else{
+							j = 1;
+						}
+						
+						for (let i = 0; i < j; i++){
+							if(square[piece[n].pos + (i + 1)].occupied){
+								if(square[piece[n].pos + (i + 1)].color == piece[n].color){
+									break;
+								} else{
+									piece[n].atkRng[i] = piece[n].pos + i + 1;
+									break;
+								}
+							}
+							
+							piece[n].atkRng[i] = piece[n].pos + i + 1;
+						}
+						
+						break;
+					
+					case "pawnB":
+						if(rank(n) == 7){
+							j = 2;
+						} else{
+							j = 1;
+						}
+						
+						for (let i = 0; i < j; i++){
+							if(square[piece[n].pos - (i + 1)].occupied){
+								break;
+							}
+							
+							piece[n].atkRng[i] = piece[n].pos - (i + 1);
+						}
+						
+						break;
+				}
+			}
+			
+			return 0;
+		}
+		
+		function movePiece(whom, to){
+			piece[whom].pos = to;
+			piece[whom].click = 0;
+			
+			pieceRng();
+		}
+		
+		function file(n){
+			return Math.floor(piece[n].pos / 10);
+		}
+		
+		function rank(n){
+			return (piece[n].pos % 10);
+		}
+		
 	</script>
 	
 </body>
