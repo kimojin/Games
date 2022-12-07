@@ -1,269 +1,111 @@
-<!DOCTYPE html>
+<!DOCTYPE = html>
 <html lang = "en">
+
 <head>
 	<meta charset = "UTF-8">
-	<title>Chess</title>
-	<link href = "style.css" rel = "stylesheet">
+	<link rel = "stylesheet" href = "style.css">
+	<link rel = "icon" href = "favicon.jpeg">
 </head>
 
 <body>
-	<h1 class = "title">Chess</h1>
-	<div class = "game">
-		<div class = "rank" id = "coordRank"></div>
-		<div class = "board" id = "board"></div>
-		<div class = "file" id = "coordFile"></div>
-	<div>
-	
-	<div id = "test0"></div>
-	<div id = "test1"></div>
-	<div id = "test2"></div>
-	<div id = "test3"></div>
+	<div class = "board"></div>
 	
 	<script>
+		var board = new Object;
 		var square = new Object;
 		var piece = new Object;
 		
-		squareObject();
-		pieceObject();
-		setBoard();
-		setPiece();
+		initSquare();
+		initPiece();
+		sync();
 		
-		pieceRng();
+		function initSquare(){
+			let alpha = ["a", "b", "c", "d", "e", "f", "g", "h"];
+			
+			for(let r = 0; r < 8; r++){
+				for(let f = 0; f < 8; f++){
+					square[r * 8 + f] = {
+						name: `${alpha[f]}${r + 1}`,
+						piece: 0
+					}
+			}
+			
+			return 0;
+		}
 		
-		function squareObject(){
-			for(let i = 0; i < 9; i++){
-				for(let j = 0; j < 9; j++){
-					square[10 * i + j] = {
-						name: 10 * i + j,
-						occupied: 0,
-					}
-					
-					if((i * j) && ((i + j) % 2)){
-						square[10 * i + j].bgColor = "light";
-					} else if((i * j) && ((i + j + 1) % 2)){
-						square[10 * i + j].bgColor = "dark";
-					}
+		function initPiece(){
+			let role = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
+			let code = [2, 4, 3, 1, 0, 3, 4, 2];
+			
+			for(i = 1; i < 9; i++){
+				piece[i] = {
+					role: `${role[i]}`,
+					code: `&#${9812 + code[i - 1]}`,
+					color: 0,
+					file: i - 1,
+					rank: 0
+				}
+			}
+			
+			for(i = 9; i < 17; i++){
+				piece[i] = {
+					role: `${role[i]}`,
+					code: `&#${9812 + code[i + 7]}`,
+					color: 1,
+					file: i - 9,
+					rank: 7
+				}
+			}
+			
+			for(i = 17; i < 25; i++){
+				piece[i] = {
+					role: "P",
+					code: "&#9817",
+					color: 0,
+					file: i - 17,
+					rank: 1
+				}
+			}
+			
+			for(i = 25; i < 33; i++){
+				piece[i] = {
+					role: "p",
+					code: "&#9823",
+					color: 1,
+					file: i - 25,
+					rank: 6
 				}
 			}
 			
 			return 0;
 		}
 		
-		function pieceObject(){
-			let role = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"];
-			let init = ["R", "N", "B", "Q", "K", "B", "N", "R"];
-			let code = [9814, 9816, 9815, 9813, 9812, 9815, 9816, 9814];
+		function sync(){
+			let r, f;
 			
-			for(let i = 0; i < 8; i++){
-				piece[i] = {
-					name: `W${init[i]}${Math.floor(i / 5)}`,
-					code: `&#${code[i]}`,
-					color: "white",
-					role: `${role[i]}`,
-					pos: 10 * (i + 1) + 1,
-					atkRng: [],
-					click: 0,
-					threat: 0,
-				}
+			for(i = 1; i < 33; i++){
+				r = piece[i].rank;
+				f = piece[i].file;
 				
-				piece[i + 16] = {
-					name: `B${init[i]}${Math.floor(i / 5)}`,
-					code: `&#${code[i] + 6}`,
-					color: "black",
-					role: `${role[i]}`,
-					pos: 10 * (i + 1) + 8,
-					atkRng: [],
-					click: 0,
-					threat: 0,
-				}
-				
-				piece[i + 8] = {
-					name: `WP${i}`,
-					code: "&#9817",
-					color: "white",
-					role: "pawnW",
-					pos: 10 * (i + 1) + 2,
-					atkRng: [],
-					click: 0,
-					threat: 0,
-				}
-				
-				piece[i + 24] = {
-					name: `BP${i}`,
-					code: "&#9823",
-					color: "black",
-					role: "pawnB",
-					pos: 10 * (i + 1) + 7,
-					atkRng: [],
-					click: 0,
-					threat: 0,
-				}
+				square[r * 8 + f].piece = i;
 			}
 			
 			return 0;
 		}
 		
 		function setBoard(){
-			let board = "";
-			let coordRank = "";
-			let coordFile = "";
-			let rank = ["a&nbsp", "b&nbsp", "c&nbsp", "d&nbsp", "e&nbsp", "f&nbsp", "g&nbsp", "h&nbsp"];
-			let file = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+			let cont;
+			let color;
 			
-			for(let i = 1; i < 9; i++){
-				for(let j = 1; j < 9; j++){
-					board += `<div class = "${square[j * 10 - i + 9].bgColor} square" id = "${j}${9 - i}">` + "</div>";
-				}
-				
-				coordRank += `<div class = "square">${rank[8 - i]}` + "</div>";
-				coordFile += `<div class = "square">${file[i]}` + "</div>";
-			}
-			
-			document.getElementById("board").innerHTML = board;
-			document.getElementById("coordRank").innerHTML = coordRank;
-			document.getElementById("coordFile").innerHTML = coordFile;
-			
-			return 0;
-		}
-		
-		function setPiece(){
-			for(let i = 0; i < 32; i++){
-				document.getElementById(`${piece[i].pos}`).innerHTML = `<div class = "pieceCont" name = "${i}" onmouseenter = "pieceEnter(this)" onmouseleave = "pieceLeave(this)" onclick = "pieceClick(this)">${piece[i].code}` + "</div>";
-				
-				square[piece[i].pos].occupied = 1;
-				square[piece[i].pos].occupiedBy = i;
-			}
-			
-			return 0;
-		}
-		
-		function pieceEnter(p){
-			p.classList.add("mousePiece");
-			
-			document.getElementById("test0").innerHTML = piece[p.attributes["name"].value].pos;
-			document.getElementById("test1").innerHTML = piece[p.attributes["name"].value].name;
-			
-			return 0;
-		}
-		
-		function pieceLeave(p){
-			p.classList.remove("mousePiece");
-			
-			return 0;
-		}
-		
-		function pieceClick(p){
-			let n = p.attributes["name"].value;
-			
-			if(piece[n].click){
-				p.classList.remove("click");
-				
-				for(let i = 0; i < piece[n].atkRng.length; i++){
-					document.getElementById(`${piece[n].atkRng[i]}`).innerHTML = "";
-				}
-			} else{
-				p.classList.add("click");
-				
-				for(let i = 0; i < piece[n].atkRng.length; i++){
-					document.getElementById(`${piece[n].atkRng[i]}`).innerHTML = `<div class = "guide" onmouseenter = "guideEnter(this)" onmouseleave = "guideLeave(this)" onclick = "movePiece(${n}, ${piece[n].atkRng[i]}); setBoard(); setPiece();">` + "</div>";
-					
-					console.log(`piece pos: ${piece[n].pos}, piece range: ${piece[n].atkRng[i]}`);
-				}
-			}
-			
-			piece[n].click = !(piece[n].click);
-			setPiece();
-			
-			console.log(`name: ${piece[n].name}, color: ${piece[n].color}, role: ${piece[n].role}, pos: ${piece[n].pos}, atkRng: ${piece[n].atkRng}, click: ${piece[n].click}`);
-			return 0;
-		}
-		
-		function guideEnter(g){
-			g.classList.add("mouseGuide");
-			
-			return 0;
-		}
-		
-		function guideLeave(g){
-			g.classList.remove("mouseGuide");
-			
-			return 0;
-		}
-		
-		function pieceRng(){
-			for(let n = 0; n < 32; n++){
-				var r = piece[n].role;
-				let j;
-				
-				piece[n].atkRng = [];
-				
-				if(!(file(n) || rank(n))){
-					console.log(piece[n].pos);
-					console.log("Break has occured.");
-					break;
-				}
-				
-				switch(r){
-					case "pawnW":
-						if(rank(n) == 2){
-							j = 2;
-						} else{
-							j = 1;
-						}
-						
-						for (let i = 0; i < j; i++){
-							if(square[piece[n].pos + (i + 1)].occupied){
-								if(square[piece[n].pos + (i + 1)].color == piece[n].color){
-									break;
-								} else{
-									piece[n].atkRng[i] = piece[n].pos + i + 1;
-									break;
-								}
-							}
-							
-							piece[n].atkRng[i] = piece[n].pos + i + 1;
-						}
-						
-						break;
-					
-					case "pawnB":
-						if(rank(n) == 7){
-							j = 2;
-						} else{
-							j = 1;
-						}
-						
-						for (let i = 0; i < j; i++){
-							if(square[piece[n].pos - (i + 1)].occupied){
-								break;
-							}
-							
-							piece[n].atkRng[i] = piece[n].pos - (i + 1);
-						}
-						
-						break;
+			for(r = 7; r >= 0; r--){
+				for(f = 0; f < 8; f++){
+					cont += `<div class = "square" id = "${f}${r}">`;
 				}
 			}
 			
 			return 0;
 		}
-		
-		function movePiece(whom, to){
-			piece[whom].pos = to;
-			piece[whom].click = 0;
-			
-			pieceRng();
-		}
-		
-		function file(n){
-			return Math.floor(piece[n].pos / 10);
-		}
-		
-		function rank(n){
-			return (piece[n].pos % 10);
-		}
-		
 	</script>
-	
 </body>
+
 </html>
