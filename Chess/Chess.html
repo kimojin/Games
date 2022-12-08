@@ -8,26 +8,51 @@
 </head>
 
 <body>
-	<div class = "board"></div>
+	<div class = "board" id = "board"></div>
 	
 	<script>
 		var board = new Object;
 		var square = new Object;
 		var piece = new Object;
+		var file = ["a", "b", "c", "d", "e", "f", "g", "h"];
+		var rank = ["1", "2", "3", "4", "5", "6", "7", "8"];
+		var click = 0;
 		
+		setBoard();
 		initSquare();
 		initPiece();
 		sync();
 		
-		function initSquare(){
-			let alpha = ["a", "b", "c", "d", "e", "f", "g", "h"];
+		function setBoard(){
+			let cont = "";
+			let color = ["dark", "light"];
 			
+			for(let r = 7; r >= 0; r--){
+				for(let f = 0; f < 8; f++){
+					cont += `<div class = "${color[(r + f) % 2]} square" id = "${file[f]}${rank[r]}">`;
+					cont += "</div>";
+				}
+			}
+			
+			document.getElementById("board").innerHTML = cont;
+			
+			return 0;
+		}
+		
+		function setPiece(){
+			
+		}
+		
+		function initSquare(){
 			for(let r = 0; r < 8; r++){
 				for(let f = 0; f < 8; f++){
 					square[r * 8 + f] = {
-						name: `${alpha[f]}${r + 1}`,
-						piece: 0
+						name: `${file[f]}${r + 1}`,
+						piece: 0,
+						threatW: 0,
+						threatB: 0
 					}
+				}
 			}
 			
 			return 0;
@@ -93,18 +118,6 @@
 			return 0;
 		}
 		
-		function setBoard(){
-			let cont;
-			let color;
-			
-			for(r = 7; r >= 0; r--){
-				for(f = 0; f < 8; f++){
-					cont += `<div class = "square" id = "${f}${r}">`;
-				}
-			}
-			
-			return 0;
-		}
 	</script>
 </body>
 
