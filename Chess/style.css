@@ -13,7 +13,37 @@
 	margin: 0 0 0 0;
 	margin-left: auto;
 	margin-right: auto;
+	box-sizing: border-box;
 	float: left;
+}
+
+.piece{
+	width: 80px;
+	height: 80px;
+	margin: 8 8 8 8;
+	border: 2px solid black;
+	border-radius: 50%;
+	background-color: white;
+	font-size: 60px;
+	text-align: center;
+	line-height: 125%;
+	cursor: pointer;
+	user-select: none;
+}
+
+.focus{
+	margin: 7 7 7 7;
+	border: 3px solid yellow;
+	font-size: 65px;
+	line-height: 112%;
+}
+
+.click{
+	border: 3px solid orange;
+}
+
+.guide{
+	border: 3px solid green;
 }
 
 .light{
