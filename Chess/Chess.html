@@ -15,11 +15,10 @@
 		var board = new Object;
 		var square = new Object;
 		var piece = new Object;
-		var click = 0;
 		
 		initSquare();
 		initPiece();
-		sync();
+		
 		setBoard();
 		setPiece();
 		
@@ -46,7 +45,7 @@
 				document.getElementById(`${square[i].name}`).innerHTML = "";
 				
 				if(square[i].piece){
-					document.getElementById(`${square[i].name}`).innerHTML = `<div class = "piece" id = "${i}" onmouseenter = "this.classList.add('focus')" onmouseout = "this.classList.remove('focus')" onclick = "if(!this.classList.contains('click')){this.classList.add('click')}else{this.classList.remove('click')}; guide(${square[i].piece});">${piece[square[i].piece].code}`;
+					document.getElementById(`${square[i].name}`).innerHTML = `<div class = "piece" id = "${piece[square[i].piece].name}" onmouseenter = "this.classList.add('focus')" onmouseout = "this.classList.remove('focus')" onclick = "if(!this.classList.contains('click')){this.classList.add('click')}else{this.classList.remove('click')}; guide(${square[i].piece});">${piece[square[i].piece].code}`;
 					document.getElementById(`${square[i].name}`).innerHTML += "</div>";
 				}
 			}
@@ -55,8 +54,10 @@
 		function initSquare(){
 			for(let r = 0; r < 8; r++){
 				for(let f = 0; f < 8; f++){
-					square[r * 8 + f] = {
+					square[sq(r, f)] = {
 						name: `${file(f)}${rank(r)}`,
+						rank: r,
+						file: f,
 						piece: 0
 					}
 				}
@@ -66,58 +67,52 @@
 		}
 		
 		function initPiece(){
-			let role = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
+			let name = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
 			let code = [2, 4, 3, 1, 0, 3, 4, 2];
 			
 			piece[0] = {
-				role: "",
+				name: "",
+				name: "",
 				code: ""
 			}
 			
 			for(i = 0; i < 8; i++){
 				piece[i + 1] = {
-					role: `${role[i]}`,
+					name: `${name[i]}`,
 					code: `&#${9812 + code[i]}`,
 					color: "white",
 					file: i,
 					rank: 0
 				}
 				
-			}
-			
-			for(i = 8; i < 16; i++){
-				piece[i + 1] = {
-					role: `${role[i]}`,
-					code: `&#${9818 + code[i - 8]}`,
+				piece[i + 9] = {
+					name: `${name[i]}`,
+					code: `&#${9818 + code[i]}`,
 					color: "black",
-					file: i - 8,
+					file: i,
 					rank: 7
 				}
-			}
-			
-			for(i = 16; i < 24; i++){
-				piece[i + 1] = {
-					role: "P",
+				
+				piece[i + 17] = {
+					name: "P",
 					code: "&#9817",
 					color: "white",
-					file: i - 16,
+					file: i,
 					rank: 1
 				}
-			}
-			
-			for(i = 24; i < 32; i++){
-				piece[i + 1] = {
-					role: "p",
+				
+				piece[i + 25] = {
+					name: "p",
 					code: "&#9823",
 					color: "black",
-					file: i - 24,
+					file: i,
 					rank: 6
 				}
 			}
 			
-			for(i = 0; i < 32; i++){
-				piece[i + 0].square = piece[i].rank * 8 + piece[i].file;
-				piece[i + 1].not = `${file(piece[i + 1].file)}${rank(piece[i + 1].rank)}`;
+			for(i = 1; i < 33; i++){
+				piece[i].square = sq(piece[i].rank, + piece[i].file);
+				piece[i].not = `${not(piece[i].rank, piece[i].file)}`;
 			}
 			
 			return 0;
@@ -134,7 +129,8 @@
 				r = piece[i + 1].rank;
 				f = piece[i + 1].file;
 				
-				square[r * 8 + f].piece = i + 1;
+				if(piece[i + 1].not != "captured")
+					square[sq(r, f)].piece = i + 1;
 			}
 			
 			for(let i = 0; i < 32; i++){
@@ -146,13 +142,16 @@
 		
 		function legalMove(x){
 			var p = piece[x];
-			var role = p.role;
+			var n = p.name;
 			var r = p.rank;
 			var f = p.file;
 			var move = [];
 			
+			if(p.not == "captured")
+				return 0;
+				
 			function movePush(rank, file){
-				let P = piece[square[rank * 8 + file].piece];
+				let P = piece[square[sq(rank, file)].piece];
 				
 				if(P){
 					if(p.color != P.color){
@@ -165,7 +164,7 @@
 				return 0;
 			}
 			
-			switch(role){
+			switch(n){
 				case "P":
 					if(!square[(r + 1) * 8 + f].piece){
 						movePush(r + 1, f);
@@ -200,7 +199,7 @@
 					break;
 				
 				case "p":
-					if(!square[(r - 1) * 8 + f].piece){
+					if(!square[sq((r - 1), f)].piece){
 						movePush(r - 1, f);
 						
 						if(r == 6){
@@ -295,6 +294,9 @@
 					
 					piece[x].legalMove = move;
 					
+					break;
+				
+				case "N":
 					break;
 					
 				case "B":
@@ -405,6 +407,49 @@
 					sq.classList.add("guide");
 				}
 			}
+			
+			return 0;
+		}
+		
+		function move(from, to){
+			if(typeof(from) == "string"){
+				for(let i = 0; i < 64; i++){
+					if(square[i].name == from){
+						from = i;
+						break;
+					}
+				}
+			}
+			
+			if(typeof(to) == "string"){
+				for(let i = 0; i < 64; i++){
+					if(square[i].name == to){
+						to = i;
+						break;
+					}
+				}
+			}
+			
+			if(!square[from].piece)
+				return 1;
+			
+			let p = piece[square[from].piece];
+			
+			if(square[to].piece){
+				let P = piece[square[to].piece];
+				
+				P.rank = 8;
+				P.file = 8;
+				P.not = "captured";
+			}
+			
+			square[to].piece = square[from].piece;
+			p.rank = square[to].rank;
+			p.file = square[to].file;
+			p.not = square[to].name;
+			square[from].piece = 0;
+			
+			setPiece();
 			
 			return 0;
 		}

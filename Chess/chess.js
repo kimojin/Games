@@ -1,15 +1,31 @@
-function rank(x){
+function rank(r){
 	let rank = ["1", "2", "3", "4", "5", "6", "7", "8"];
 	
-	return rank[x];
+	if ((r >= 0) && (r <= 7))
+		return rank[r];
+	else
+		return 0;
 }
 
-function file(x){
+function file(f){
 	let file = ["a", "b", "c", "d", "e", "f", "g", "h"];
 	
-	return file[x];
+	if ((f >= 0) && (f <= 7))
+		return file[f];
+	else
+		return 0;
 }
 
-function not(x, y){
-	return `${file(y)}${rank(x)}`;
+function not(r, f){
+	if (((f >= 0) && (f <= 7)) && ((r >= 0) && (r <= 7)))
+		return `${file(f)}${rank(r)}`;
+	else
+		return 0;
+}
+
+function sq(r, f){
+	if (((f >= 0) && (f <= 7)) && ((r >= 0) && (r <= 7)))
+		return r * 8 + f;
+	else
+		return 0;
 }
