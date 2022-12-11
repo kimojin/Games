@@ -22,7 +22,7 @@
 	margin: 0 0 0 0;
 	box-sizing: border-box;
 	border: 2px solid black;
-	border-radius: 50%;
+	border-radius: 45%;
 	background-color: white;
 	font-size: 60px;
 	text-align: center;
@@ -31,8 +31,12 @@
 	user-select: none;
 }
 
-.focus{
-	border: 2px solid yellow;
+.focused{
+	background-color: rgba(255, 255, 204) !important;
+}
+
+.clicked{
+	background-color: rgba(204, 255, 255) !important;
 }
 
 .click{
@@ -45,9 +49,9 @@
 }
 
 .light{
-	background-color: #E0E0E0;
+	background-color: rgba(230, 230, 230);
 }
 
 .dark{
-	background-color: #202020;
+	background-color: rgba(77, 77, 77);
 }
