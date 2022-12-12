@@ -43,23 +43,23 @@ function coordToNot(coord){
 	return "x0";
 }
 
-function getSquareByName(name){
+function getSqByName(name){
 	for(let i = 0; i < 64; i++){
-		if(name == square[ + 1].name)
+		if(name == square[i + 1].name)
 			return square[i + 1];
 	}
 	
 	return square[0];
 }
 
-function getSquareByPiece(p){
+function getSqByPc(p){
 	if(p)
 		return square[p.square];
 	else
 		return square[0];
 }
 
-function getPieceByName(name){
+function getPcByName(name){
 	for(let i = 0; i < 32; i++){
 		if(name == piece[i + 1].name)
 			return piece[i + 1];
@@ -68,9 +68,13 @@ function getPieceByName(name){
 	return piece[0];
 }
 
-function getPieceByCoord(coord){
+function getPcByCoord(coord){
 	if((coord >= 0) && (coord <= 64))
 		return piece[square[coord].piece];
 	else
 		return piece[0];
+}
+
+function getPcBySq(s){
+	return piece[s.piece];
 }

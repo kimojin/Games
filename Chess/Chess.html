@@ -21,15 +21,23 @@
 		initPiece();
 		
 		setBoard();
-		setPiece();
 		
 		function setBoard(){
+			for(let i = 0; i < 32; i++){
+				getLegalMove(piece[i + 1]);
+			}
+			
+			setSquare();
+			setPiece();
+		}
+		
+		function setSquare(){
 			let cont = "";
 			let color = ["dark", "light"];
 			
 			for(let r = 8; r > 0; r--){
 				for(let f = 1; f < 9; f++){
-					cont += `<div class = "${color[(r + f) % 2]} square" id = "${not(r, f)}">`;
+					cont += `<div class = "${color[(r + f) % 2]} square" id = "${not(r, f)}" onmouseover = "mouseOverPiece(this)" onmouseout = "mouseOutPiece(this)" onclick = "clickPiece(this)">`;
 					cont += "</div>";
 				}
 			}
@@ -40,21 +48,14 @@
 		}
 		
 		function setPiece(){
-			sync();
-			
 			for(i = 0; i < 64; i++){
 				let s = square[i + 1];
-				let p = getPieceByCoord(i + 1);
+				let p = getPcByCoord(i + 1);
 				
 				document.getElementById(`${s.name}`).innerHTML = "";
 				
 				if(s.piece){
-					if(turn == p.color){
-						document.getElementById(`${s.name}`).innerHTML += `<div class = "piece" id = "${p.name}" onmouseover = "mouseOverPiece(${s.piece})" onmouseout = "mouseOutPiece(${s.piece})" onclick = "clickPiece(${s.piece})">${p.code}`;
-					} else{
-						document.getElementById(`${s.name}`).innerHTML += `<div class = "piece" id = "${p.name}">${p.code}`;
-					}
-					
+					document.getElementById(`${s.name}`).innerHTML += `<div class = "piece" id = "${p.name}">${p.code}`;
 					document.getElementById(`${s.name}`).innerHTML += "</div>";
 				}
 			}
@@ -82,6 +83,13 @@
 				}
 			}
 			
+			for(let i = 0; i < 8; i++){
+				square[i + 1].piece = i + 1;
+				square[i + 9].piece = i + 9;
+				square[i + 57].piece = i + 17;
+				square[i + 49].piece = i + 25;
+			}
+			
 			return 0;
 		}
 		
@@ -91,8 +99,8 @@
 			
 			piece[0] = {
 				name: "X1",
-				code: "none",
 				role: "none",
+				code: "none",
 				color: "none",
 				rank: 0,
 				file: 0,
@@ -101,6 +109,7 @@
 			for(i = 0; i < 8; i++){
 				piece[i + 1] = {
 					name: `${name[i]}${0}${Math.floor(i / 5 + 1)}`,
+					role: `${name[i]}`,
 					code: `&#${9812 + code[i]}`,
 					color: "white",
 					file: i + 1,
@@ -109,6 +118,7 @@
 				
 				piece[i + 9] = {
 					name: `P0${i + 1}`,
+					role: "P",
 					code: "&#9817",
 					color: "white",
 					file: i + 1,
@@ -117,6 +127,7 @@
 				
 				piece[i + 17] = {
 					name: `${name[i + 8]}${0}${Math.floor(i / 5 + 1)}`,
+					role: `${name[i + 8]}`,
 					code: `&#${9818 + code[i]}`,
 					color: "black",
 					file: i + 1,
@@ -125,6 +136,7 @@
 				
 				piece[i + 25] = {
 					name: `p0${i + 1}`,
+					role: "p",
 					code: "&#9823",
 					color: "black",
 					file: i + 1,
@@ -133,51 +145,156 @@
 			}
 			
 			for(i = 0; i < 33; i++){
+				piece[i].index = i;
 				piece[i].square = coord(piece[i].rank, piece[i].file);
 				piece[i].not = `${not(piece[i].rank, piece[i].file)}`;
+				getLegalMove(piece[i]);
 			}
 			
 			return 0;
 		}
 		
-		function sync(){
-			for(let i = 0; i < 64; i ++){
-				square[i + 1].piece = 0;
+		function getLegalMove(p){
+			let r = p.rank;
+			let f = p.file;
+			let move = [];
+			
+			function movePush(name){
+				if(getPcBySq(getSqByName(name)).color != p.color){
+					move.push(name);
+				}
 			}
 			
-			for(let i = 0; i < 32; i++){
-				let r = piece[i + 1].rank;
-				let f = piece[i + 1].file;
+			switch(p.role){
+				case "P":
+					if(!square[coord(r + 1, f)].piece){
+						move.push(square[coord(r + 1, f)].name);
+						
+						if(r == 2){
+							if(!square[coord(r + 2, f)].piece){
+								move.push(square[coord(r + 2, f)].name);
+							}
+						}
+					}
+					
+					if(square[coord(r + 1, f - 1)].piece){
+						movePush(square[coord(r + 1, f - 1)].name);
+					}
+					
+					if(square[coord(r + 1, f + 1)].piece){
+						movePush(square[coord(r + 1, f + 1)].name);
+					}
+					
+					break;
+					
+				case "p":
+					if(!square[coord(r - 1, f)].piece){
+						move.push(square[coord(r - 1, f)].name);
+						
+						if(r == 7){
+							if(!square[coord(r - 2, f)].piece){
+								move.push(square[coord(r - 2, f)].name);
+							}
+						}
+					}
+					
+					if(square[coord(r - 1, f - 1)].piece){
+						movePush(square[coord(r - 1, f - 1)].name);
+					}
+					
+					if(square[coord(r - 1, f + 1)].piece){
+						movePush(square[coord(r - 1, f + 1)].name);
+					}
+					
+					break;
+					
+				case "R": case "r":
+					break;
+			}
+			
+			p.legalMove = move;
+			
+			return 0;
+		}
+		
+		function move(fromName, toName){
+			let from = getSqByName(fromName);
+			let whom = getPcBySq(from)
+			let to = getSqByName(toName);
+			
+			to.piece = from.piece;
+			from.piece = 0;
+			
+			whom.rank = to.rank;
+			whom.file = to.file;
+			whom.not = to.name;
+			whom.square = to.coord;
+			
+			getLegalMove(whom);
+			
+			if(turn == "white")
+				turn = "black";
+			else
+				turn = "white";
 				
-				if(piece[i + 1].not != "x0")
-					square[coord(r, f)].piece = i + 1;
-			}
+			setBoard();
+			
+			document.getElementById(fromName).classList.add("lastMove");
+			document.getElementById(toName).classList.add("lastMove");
 			
 			return 0;
 		}
 		
-		function mouseOverPiece(index){
-			let p = piece[index];
-			let s = getSquareByPiece(p);
+		function mouseOverPiece(box){
+			s = getSqByName(box.id);
+			p = getPcBySq(s);
 			
-			document.getElementById(s.name).classList.add('focused');
+			if(p.color == turn){
+				box.classList.add('focused');
+			}
 		}
 		
-		function mouseOutPiece(index){
-			let p = piece[index];
-			let s = getSquareByPiece(p);
+		function mouseOutPiece(box){
+			s = getSqByName(box.id);
+			p = getPcBySq(s);
 			
-			document.getElementById(s.name).classList.remove('focused');
+			if(p.color == turn){
+				box.classList.remove('focused');
+			}
 		}
 		
-		function clickPiece(index){
-			let p = piece[index];
-			let s = getSquareByPiece(p);
+		function clickPiece(box){
+			s = getSqByName(box.id);
+			p = getPcBySq(s);
 			
-			if(!document.getElementById(s.name).classList.contains('clicked')){
-				document.getElementById(s.name).classList.add('clicked');
-			} else{
-				document.getElementById(s.name).classList.remove('clicked');
+			if(p.color == turn){
+				if(!box.classList.contains('clicked')){
+					box.classList.add('clicked');
+					
+					for(let i = 0; i < p.legalMove.length; i++){
+						let t = document.getElementById(p.legalMove[i]);
+						
+						if(getSqByName(p.legalMove[i]).piece)
+							t.classList.add('capture');
+						else
+							t.classList.add('move');
+							
+						t.addEventListener("click", move(s.name, t.id));
+					}
+				} else{
+					box.classList.remove('clicked');
+					
+					for(let i = 0; i < p.legalMove.length; i++){
+						let t = document.getElementById(p.legalMove[i]);
+						
+						if(getSqByName(p.legalMove[i]).piece)
+							t.classList.remove('capture');
+						else
+							t.classList.remove('move');
+							
+						t.removeEventListener("click", move());
+					}
+				}
 			}
 		}
 	</script>
