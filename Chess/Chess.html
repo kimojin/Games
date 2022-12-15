@@ -23,12 +23,22 @@
 		setBoard();
 		
 		function setBoard(){
+			for(let i = 0; i < 64; i++){
+				square[i + 1].threat.white = 0;
+				square[i + 1].threat.black = 0;
+			}
+			
 			for(let i = 0; i < 32; i++){
-				getLegalMove(piece[i + 1]);
+				legalMove(piece[i + 1]);
 			}
 			
 			setSquare();
 			setPiece();
+			
+			if(getSqByPc(piece[5]).threat.black)
+				document.getElementById(getSqByPc(piece[5]).name).classList.add("check");
+			if(getSqByPc(piece[21]).threat.white)
+				document.getElementById(getSqByPc(piece[21]).name).classList.add("check");
 		}
 		
 		function setSquare(){
@@ -67,7 +77,11 @@
 				coord: 0,
 				rank: 0,
 				file: 0,
-				piece: 0
+				piece: 0,
+				threat: {
+					white: 0,
+					black: 0
+				}
 			}
 			
 			for(let r = 1; r < 9; r++){
@@ -78,7 +92,7 @@
 						rank: r,
 						file: f,
 						piece: 0
-					}
+					};
 				}
 			}
 			
@@ -87,6 +101,18 @@
 				square[i + 9].piece = i + 9;
 				square[i + 57].piece = i + 17;
 				square[i + 49].piece = i + 25;
+			}
+			
+			for(let i = 0; i < 64; i++){
+				square[i + 1].threat = {
+					white: 0,
+					black: 0
+				};
+			}
+			
+			for(let i = 0; i < 8; i++){
+				square[i + 1].threat.white = 1;
+				square[i + 57].threat.black = 1;
 			}
 			
 			return 0;
@@ -98,121 +124,326 @@
 			
 			piece[0] = {
 				name: "X1",
-				role: "none",
 				code: "none",
+				role: "none",
 				color: "none",
 				rank: 0,
 				file: 0,
-			}
+			};
 			
 			for(i = 0; i < 8; i++){
 				piece[i + 1] = {
 					name: `${name[i]}${0}${Math.floor(i / 5 + 1)}`,
-					role: `${name[i]}`,
 					code: `&#${9812 + code[i]}`,
+					role: `${name[i]}`,
 					color: "white",
 					file: i + 1,
 					rank: 1
-				}
+				};
 				
 				piece[i + 9] = {
 					name: `P0${i + 1}`,
-					role: "P",
 					code: "&#9817",
+					role: "P",
 					color: "white",
 					file: i + 1,
 					rank: 2
-				}
+				};
 				
 				piece[i + 17] = {
 					name: `${name[i + 8]}${0}${Math.floor(i / 5 + 1)}`,
-					role: `${name[i + 8]}`,
 					code: `&#${9818 + code[i]}`,
+					role: `${name[i + 8]}`,
 					color: "black",
 					file: i + 1,
 					rank: 8
-				}
+				};
 				
 				piece[i + 25] = {
 					name: `p0${i + 1}`,
-					role: "p",
 					code: "&#9823",
+					role: "p",
 					color: "black",
 					file: i + 1,
 					rank: 7
-				}
+				};
 			}
 			
 			for(i = 0; i < 33; i++){
 				piece[i].index = i;
+				piece[i].move = 0;
 				piece[i].square = coord(piece[i].rank, piece[i].file);
 				piece[i].not = `${not(piece[i].rank, piece[i].file)}`;
-				getLegalMove(piece[i]);
+				legalMove(piece[i]);
 			}
 			
 			return 0;
 		}
 		
-		function getLegalMove(p){
+		function legalMove(p){
 			let r = p.rank;
 			let f = p.file;
 			let move = [];
 			
 			function movePush(name){
-				if(getPcBySq(getSqByName(name)).color != p.color){
-					move.push(name);
-				}
+				if(((notToCoord(name) > 0) && (notToCoord(name) < 65)))
+					if(getPcBySq(getSqByName(name)).color !== p.color){
+						move.push(name);
+					}
 			}
+			
+			if(p.not == "x0")
+				return 0;
 			
 			switch(p.role){
 				case "P":
 					if(!square[coord(r + 1, f)].piece){
-						move.push(square[coord(r + 1, f)].name);
+						move.push(not(r + 1, f));
 						
 						if(r == 2){
 							if(!square[coord(r + 2, f)].piece){
-								move.push(square[coord(r + 2, f)].name);
+								move.push(not(r + 2, f));
 							}
 						}
 					}
 					
 					if(square[coord(r + 1, f - 1)].piece){
-						movePush(square[coord(r + 1, f - 1)].name);
+						movePush(not(r + 1, f - 1));
 					}
 					
 					if(square[coord(r + 1, f + 1)].piece){
-						movePush(square[coord(r + 1, f + 1)].name);
+						movePush(not(r + 1, f + 1));
 					}
 					
 					break;
 					
 				case "p":
 					if(!square[coord(r - 1, f)].piece){
-						move.push(square[coord(r - 1, f)].name);
+						move.push(not(r - 1, f));
 						
 						if(r == 7){
 							if(!square[coord(r - 2, f)].piece){
-								move.push(square[coord(r - 2, f)].name);
+								move.push(not(r - 2, f));
 							}
 						}
 					}
 					
 					if(square[coord(r - 1, f - 1)].piece){
-						movePush(square[coord(r - 1, f - 1)].name);
+						movePush(not(r - 1, f - 1));
 					}
 					
 					if(square[coord(r - 1, f + 1)].piece){
-						movePush(square[coord(r - 1, f + 1)].name);
+						movePush(not(r - 1, f + 1));
 					}
 					
 					break;
 					
 				case "R": case "r":
+					for(let i = 1; r + i < 9; i++){
+						movePush(not(r + i, f));
+						
+						if(square[coord(r + i, f)].piece)
+							break;
+					}
+					
+					for(let i = 1; r - i > 0; i++){
+						movePush(not(r - i, f));
+						
+						if(square[coord(r - i, f)].piece)
+							break;
+					}
+					
+					for(let i = 1; f + i < 9; i++){
+						movePush(not(r, f + i));
+						
+						if(square[coord(r, f + i)].piece)
+							break;
+					}
+					
+					for(let i = 1; f - i > 0; i++){
+						movePush(not(r, f - i));
+						
+						if(square[coord(r, f - i)].piece)
+							break;
+					}
+					
+					break;
+				
+				case "N": case "n":
+					for(let i = -2; i < 3; i++){
+						if(i === 0)
+							continue;
+						
+						let j = 3 - Math.abs(i);
+						
+						movePush(not(r + i, f + j));
+						movePush(not(r + i, f - j));
+					}
+					
+					break;
+				
+				case "B": case "b":
+					for(let i = 1; (r + i < 9) && (f + i < 9); i++){
+						movePush(not(r + i, f + i));
+						
+						if(square[coord(r + i, f + i)].piece)
+							break;
+					}
+					
+					for(let i = 1; (r + i < 9) && (f - i > 0); i++){
+						movePush(not(r + i, f - i));
+						
+						if(square[coord(r + i, f - i)].piece)
+							break;
+					}
+					
+					for(let i = 1; (r - i > 0) && (f + i < 9); i++){
+						movePush(not(r - i, f + i));
+						
+						if(square[coord(r - i, f + i)].piece)
+							break;
+					}
+					
+					for(let i = 1; (r - i > 0) && (f - i > 0); i++){
+						movePush(not(r - i, f - i));
+						
+						if(square[coord(r - i, f - i)].piece)
+							break;
+					}
+					
+					break;
+					
+				case "Q": case "q":
+					for(let i = 1; r + i < 9; i++){
+						movePush(not(r + i, f));
+						
+						if(square[coord(r + i, f)].piece)
+							break;
+					}
+					
+					for(let i = 1; r - i > 0; i++){
+						movePush(not(r - i, f));
+						
+						if(square[coord(r - i, f)].piece)
+							break;
+					}
+					
+					for(let i = 1; f + i < 9; i++){
+						movePush(not(r, f + i));
+						
+						if(square[coord(r, f + i)].piece)
+							break;
+					}
+					
+					for(let i = 1; f - i > 0; i++){
+						movePush(not(r, f - i));
+						
+						if(square[coord(r, f - i)].piece)
+							break;
+					}
+					
+					for(let i = 1; (r + i < 9) && (f + i < 9); i++){
+						movePush(not(r + i, f + i));
+						
+						if(square[coord(r + i, f + i)].piece)
+							break;
+					}
+					
+					for(let i = 1; (r + i < 9) && (f - i > 0); i++){
+						movePush(not(r + i, f - i));
+						
+						if(square[coord(r + i, f - i)].piece)
+							break;
+					}
+					
+					for(let i = 1; (r - i > 0) && (f + i < 9); i++){
+						movePush(not(r - i, f + i));
+						
+						if(square[coord(r - i, f + i)].piece)
+							break;
+					}
+					
+					for(let i = 1; (r - i > 0) && (f - i > 0); i++){
+						movePush(not(r - i, f - i));
+						
+						if(square[coord(r - i, f - i)].piece)
+							break;
+					}
+					
+					break;
+					
+				case "K":
+					for(let i = -1; i < 2; i++){
+						for(let j = -1; j < 2; j++){
+							if((i === 0) && (j === 0))
+								continue;
+							
+							square[coord(r + i, f + j)].threat.white++;
+							
+							if(!square[coord(r + i, f + j)].threat.black)
+								movePush(not(r + i, f + j));
+						}
+					}
+					
+					if((piece[5].move == 0) && (piece[8].move == 0)){
+						if(!square[6].threat.black && !square[7].threat.black){
+							if(!square[6].piece && !square[7].piece)
+								movePush("g1");
+						}
+					}
+					
+					if((piece[5].move == 0) && (piece[1].move == 0)){
+						if(!square[3].threat.black && !square[4].threat.black){
+							if(!square[2].piece && !square[3].piece && !square[4].piece)
+								movePush("c1");
+						}
+					}
+					
+					break;
+					
+				case "k":
+					for(let i = -1; i < 2; i++){
+						for(let j = -1; j < 2; j++){
+							if((i === 0) && (j === 0))
+								continue;
+							
+							square[coord(r + i, f + j)].threat.black++;
+							
+							if(!square[coord(r + i, f + j)].threat.white)
+								movePush(not(r + i, f + j));
+						}
+					}
+					
+					if((piece[21].move == 0) && (piece[24].move == 0)){
+						if(!square[62].threat.white && !square[63].threat.white){
+							if(!square[62].piece && !square[63].piece)
+								movePush("g8");
+						}
+					}
+					
+					if((piece[21].move == 0) && (piece[17].move == 0)){
+						if(!square[59].threat.white && !square[60].threat.white){
+							if(!square[58].piece && !square[59].piece && !square[60].piece)
+								movePush("c8");
+						}
+					}
+					
 					break;
 			}
 			
 			p.legalMove = move;
 			
+			for(let i = 0; i < p.legalMove.length; i++){
+				if(p.color === "white")
+					getSqByName(p.legalMove[i]).threat.white++;
+				else(p.color === "black")
+					getSqByName(p.legalMove[i]).threat.black++;
+			}
+			
+			return 0;
+		}
+		
+		function threat(){
 			return 0;
 		}
 		
@@ -221,6 +452,14 @@
 			let whom = getPcBySq(from)
 			let to = getSqByName(toName);
 			
+			if(to.piece){
+				piece[to.piece].rank = 0;
+				piece[to.piece].file = 0;
+				piece[to.piece].not = "x0";
+				piece[to.piece].square = 0;
+				piece[to.piece].legalMove = [];
+			}
+			
 			to.piece = from.piece;
 			from.piece = 0;
 			
@@ -228,14 +467,15 @@
 			whom.file = to.file;
 			whom.not = to.name;
 			whom.square = to.coord;
+			whom.move++;
 			
-			getLegalMove(whom);
+			legalMove(whom);
 			
 			if(turn == "white")
 				turn = "black";
 			else
 				turn = "white";
-				
+			
 			setBoard();
 			
 			document.getElementById(fromName).classList.add("lastMove");
@@ -245,21 +485,25 @@
 		}
 		
 		function mouseOverPiece(box){
-			s = getSqByName(box.id);
-			p = getPcBySq(s);
+			let s = getSqByName(box.id);
+			let p = getPcBySq(s);
 			
 			if(p.color == turn){
 				box.classList.add('focused');
 			}
+			
+			return 0;
 		}
 		
 		function mouseOutPiece(box){
-			s = getSqByName(box.id);
-			p = getPcBySq(s);
+			let s = getSqByName(box.id);
+			let p = getPcBySq(s);
 			
 			if(p.color == turn){
 				box.classList.remove('focused');
 			}
+			
+			return 0;
 		}
 		
 		function clickPiece(box){
@@ -267,14 +511,18 @@
 			p = getPcBySq(s);
 			
 			if(p.color == turn){
-				n = s.name;
-				
-				function clickMove(e){
-					move(n, e.currentTarget.id);
-					console.log("move has occured.");
-				}
+				clickSquare = s.name;
 				
 				if(!box.classList.contains('clicked')){
+					for(let j = 0; j < 64; j++){
+						T = document.getElementById(square[j + 1].name);
+						
+						T.classList.remove('clicked');
+						T.classList.remove('move');
+						T.classList.remove('capture');
+						T.removeEventListener("click", clickMove);
+					}
+					
 					box.classList.add('clicked');
 					
 					for(let i = 0; i < p.legalMove.length; i++){
@@ -284,10 +532,8 @@
 							t.classList.add('capture');
 						else
 							t.classList.add('move');
-							
-						t.addEventListener("click", clickMove);
 						
-						console.log(`added a listener to ${p.legalMove[i]}`);
+						t.addEventListener("click", clickMove);
 					}
 				} else{
 					box.classList.remove('clicked');
@@ -299,13 +545,19 @@
 							t.classList.remove('capture');
 						else
 							t.classList.remove('move');
-							
-						t.removeEventListener("click", clickMove);
 						
-						console.log(`removed the listener in ${p.legalMove[i]}`);
+						t.removeEventListener("click", clickMove);
 					}
 				}
 			}
+			
+			return 0;
+		}
+		
+		function clickMove(e){
+			move(clickSquare, e.currentTarget.id);
+			
+			return 0;
 		}
 	</script>
 </body>

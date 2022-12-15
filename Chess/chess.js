@@ -53,10 +53,7 @@ function getSqByName(name){
 }
 
 function getSqByPc(p){
-	if(p)
-		return square[p.square];
-	else
-		return square[0];
+	return square[p.square];
 }
 
 function getPcByName(name){

@@ -1,13 +1,16 @@
+html, body{
+	background-color: rgba(25, 25, 25);
+}
+
 .board{
 	width: 800px;
 	height: 800px;
 	margin-left: auto;
 	margin-right: auto;
-	border: 5px solid black;
+	border: 5px solid rgba(128, 128, 128);
 }
 
 .square{
-	position: relative;
 	width: 12.5%;
 	height: 12.5%;
 	padding: 8 8 8 8;
@@ -15,14 +18,7 @@
 	float: left;
 }
 
-.not{
-	position: absolute;
-	top: 4px;
-	left: 4px;
-}
-
 .piece{
-	position: absolute;
 	top: 8px;
 	bottom: 8px;
 	width: 84px;
@@ -43,11 +39,15 @@
 }
 
 .clicked{
-	background-color: rgba(255, 204, 204) !important;
+	background-color: rgba(255, 204, 128) !important;
 }
 
 .lastMove{
 	background-color: rgba(204, 204, 255) !important;
+}
+
+.check{
+	background-color: rgba(256, 128, 128) !important;
 }
 
 .move{
