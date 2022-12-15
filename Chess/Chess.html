@@ -52,8 +52,7 @@
 				let s = square[i + 1];
 				let p = getPcByCoord(i + 1);
 				
-				document.getElementById(`${s.name}`).innerHTML = "";
-				
+				document.getElementById(`${s.name}`).innerHTML = ""
 				if(s.piece){
 					document.getElementById(`${s.name}`).innerHTML += `<div class = "piece" id = "${p.name}">${p.code}`;
 					document.getElementById(`${s.name}`).innerHTML += "</div>";
@@ -268,6 +267,13 @@
 			p = getPcBySq(s);
 			
 			if(p.color == turn){
+				n = s.name;
+				
+				function clickMove(e){
+					move(n, e.currentTarget.id);
+					console.log("move has occured.");
+				}
+				
 				if(!box.classList.contains('clicked')){
 					box.classList.add('clicked');
 					
@@ -279,7 +285,9 @@
 						else
 							t.classList.add('move');
 							
-						t.addEventListener("click", move(s.name, t.id));
+						t.addEventListener("click", clickMove);
+						
+						console.log(`added a listener to ${p.legalMove[i]}`);
 					}
 				} else{
 					box.classList.remove('clicked');
@@ -292,7 +300,9 @@
 						else
 							t.classList.remove('move');
 							
-						t.removeEventListener("click", move());
+						t.removeEventListener("click", clickMove);
+						
+						console.log(`removed the listener in ${p.legalMove[i]}`);
 					}
 				}
 			}
